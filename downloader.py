@@ -4,6 +4,7 @@ import logging
 import sys
 import concurrent.futures
 import threading
+import json
 
 
 class ImageDownloader:
@@ -32,7 +33,7 @@ class ImageDownloader:
         self.logger.addHandler(stdout_handler)
 
     # Task for thread pool
-    def download_img_task(self, url, filename):
+    def download_img_task(self, filename, url):
         id = threading.current_thread().ident
         try:
             response = requests.get(url, stream=True)
@@ -53,9 +54,9 @@ class ImageDownloader:
 
 
 if __name__ == "__main__":
-    downloader = ImageDownloader()
-    with open('urls.txt', 'r') as file:
-        urls = [i.strip() for i in file.readlines()]
+    downloader = ImageDownloader('is24-img')
+    with open('urls.json', 'r') as file:
+        json_data = json.load(file)
 
-    for i, url in enumerate(urls):
-        downloader.download(url, f'{i}.jpg')
+    for filename, url in json_data.items():
+        downloader.download(filename, url)
